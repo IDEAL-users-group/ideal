@@ -1,5 +1,7 @@
 # Makefile for ideal, 1.3 (UKC) 13/2/89
 
+YACC	= bison -y
+
 # Where the executable lives that the users call "ideal"
 BINDIR = /usr/lib/ditroff
 
@@ -71,9 +73,11 @@ ideal.h:	stdas.h
 
 lex.yy.c:	idlex.l
 	lex idlex.l
+lex.yy.o:	lex.yy.c
+	cc -c -DYY_NO_INPUT lex.yy.c
 
 y.tab.c:	idyac.y
-	yacc -d idyac.y
+	$(YACC) -d idyac.y
 
 list:
 	pr $(SOURCES)
