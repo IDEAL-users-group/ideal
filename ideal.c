@@ -3,16 +3,17 @@
 
 boolean dbg = FALSE;
 int when_bug = 0;
-char *filename;
+const char * filename;
 int lineno = 0;
 char libstr[50];
 boolean radflag = FALSE;
 
 BOXPTR boxlist = NULL;
 
-main(argc, argv)
-int argc;
-char *argv[];
+static void act (LINEPTR);
+
+int
+main(int argc, const char * argv[])
 {
 	bug_off;
 	while (argc > 1 && argv[1][0] == '-') {
@@ -53,7 +54,8 @@ char *argv[];
 	exit(0);
 }
 
-interpret()
+void
+interpret(void)
 {
 	PUTNODE dummyroot;
 	if (when_bug & 01) bug_on;
@@ -81,9 +83,8 @@ interpret()
 	}
 }
 
-idinclude (filnam, mode)
-char *filnam;
-int mode;
+void
+idinclude (const char * filnam, int mode)
 {
 	FILE *nufile;
 	dprintf "opening file %s\n", filnam);
@@ -104,8 +105,8 @@ int mode;
 	}
 }
 
-act (the_picture)
-LINEPTR the_picture;
+static void
+act (LINEPTR the_picture)
 {
 	LINEPTR lineseg;
 	float maxx, maxy, minx, miny;
