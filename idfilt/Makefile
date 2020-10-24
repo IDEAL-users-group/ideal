@@ -2,7 +2,7 @@
 
 # LIBDIR is innherited from parent makefile, usually /usr/lib/ideal
 
-ALL = 4filt pfilt tfilt
+ALL = pfilt tfilt
 
 all: $(ALL)
 
