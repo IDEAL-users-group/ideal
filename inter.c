@@ -105,7 +105,7 @@ float *phi1;
 float *theta2;
 float *phi2;
 {
-	float xcoeff, ycoeff, const;
+	float xcoeff, ycoeff, fconst;
 	float u1, v1, u2, v2;
 	boolean lncrc;
 
@@ -117,26 +117,26 @@ float *phi2;
 	r1 = fabs(r1);
 	xcoeff = 2*(x1 - x0);
 	ycoeff = 2*(y1 - y0);
-	const = r0*r0 - x0*x0 - y0*y0 - r1*r1 + x1*x1 + y1*y1;
+	fconst = r0*r0 - x0*x0 - y0*y0 - r1*r1 + x1*x1 + y1*y1;
 	if (fabs(xcoeff) < EPSILON && fabs(ycoeff) < EPSILON)
 		return (FALSE);
 	if (fabs(xcoeff) < EPSILON) {
 		u1 = 0.0;
 		u2 = 1.0;
-		v1 = v2 = const/ycoeff;
+		v1 = v2 = fconst/ycoeff;
 	} else if (fabs(ycoeff) < EPSILON) {
 		v1 = 0.0;
 		v2 = 1.0;
-		u1 = u2 = const/xcoeff;
-	} else if (fabs(const) < EPSILON) {
+		u1 = u2 = fconst/xcoeff;
+	} else if (fabs(fconst) < EPSILON) {
 		u1 = 0.0;
 		v1 = 0.0;
 		u2 = 1.0;
-		v2 = (const - 1.0/xcoeff)/ycoeff;
+		v2 = (fconst - 1.0/xcoeff)/ycoeff;
 	} else {
 		u1 = 0.0;
-		v1 = const/ycoeff;
-		u2 = const/xcoeff;
+		v1 = fconst/ycoeff;
+		u2 = fconst/xcoeff;
 		v2 = 0.0;
 	}
 	lncrc = lcinter (u1,v1, u2,v2, x1,y1,r1, theta1,phi1, theta2,phi2);
