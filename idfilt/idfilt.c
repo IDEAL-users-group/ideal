@@ -1,7 +1,8 @@
+#include <stdlib.h>
+#include <string.h>
 #include "idfilt.h"
 
 FILE *infile;
-char *filename;
 int lineno = 0;
 
 float maxx, maxy;
@@ -18,9 +19,10 @@ boolean veryfirst = TRUE;
 
 boolean wantquality = FALSE;
 
-main (argc, argv)
-int argc;
-char *argv[];
+static void interpret (FILE *);
+
+int
+main (int argc, const char * argv[])
 {
 	while (argc > 1 && argv[1][0] == '-') {
 		switch (argv[1][1]) {
@@ -44,7 +46,6 @@ char *argv[];
 				fprintf (stderr, "ideal filter: can't open %s\n", *argv);
 				exit (1);
 			}
-			filename = *argv;
 			lineno = 0;
 			interpret (infile);
 			fclose (infile);
@@ -53,8 +54,8 @@ char *argv[];
 	exit (0);
 }
 
-interpret (infile)
-register FILE *infile;
+static void
+interpret (FILE * infile)
 {
 	char buf[250];
 
