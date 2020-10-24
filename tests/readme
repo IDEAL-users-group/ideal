@@ -1,0 +1,12 @@
+This directory contains example ideal files to be used for testing.  If
+everything's working, ideal should handle all files in this directory without
+error.
+
+Each bad* file contains code that triggers (or used to trigger) a specific
+error; each man* file contains an example from the user's manual.
+
+Example use:
+
+  $ ../a.out < man00.i | ../idfilt/pfilt | plot -T X
+  
+Eventually there will be a test harness to automate testing.
