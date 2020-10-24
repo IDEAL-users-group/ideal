@@ -104,7 +104,7 @@ diff:
 	done
 
 clean:
-	rm -f $(OBJECTS) y.tab.c lex.yy.c
+	rm -f a.out *.o y.tab.* lex.yy.*
 	(cd idfilt; make clean)
 
 fgrep:
