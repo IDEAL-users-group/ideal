@@ -206,7 +206,7 @@ LINEPTR linelist;
 		dummyput.parm->stmtlist->next->next->next->next = ostmthead;
 		/* make N copies */
 		for (i = 0; i < Re(copies); i ++) {
-			((EXTLPTR) ((INTLPTR) dummyput.parm->stmtlist->stmt)->right)->info.const = i;
+			((EXTLPTR) ((INTLPTR) dummyput.parm->stmtlist->stmt)->right)->info.fconst = i;
 			pennoad = buildnoadtree (&dummyput);
 			pennoad->father = noadtree;
 			eqneval (pennoad);
