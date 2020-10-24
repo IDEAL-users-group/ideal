@@ -1,3 +1,4 @@
+#include <string.h>
 #include "idfilt.h"
 
 #define	RESOLUTION	240.0
