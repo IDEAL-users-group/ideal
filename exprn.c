@@ -33,7 +33,7 @@ NOADPTR givennoad;
 			return (pathfind (extl->info.path, givennoad));
 			break;
 		case CONST:
-			return (commagen (extl->info.const, 0.0));
+			return (commagen (extl->info.fconst, 0.0));
 			break;
 		}
 	}
