@@ -1,4 +1,6 @@
 #include "idfilt.h"
+#include <plot.h>
+#include <plotcompat.h>
 
 float xscale, yscale;
 
