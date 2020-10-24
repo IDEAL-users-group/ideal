@@ -10,7 +10,6 @@ typedef int	boolean;
 
 #define EPSILON 0.0001
 #define	PI	3.1415926535
-#define	INFINITY	1e30
 #define INTERSIZE	20
 #define	POSSINTER	2
 
@@ -32,7 +31,6 @@ extern boolean dbg;
 #define bug_off	dbg = FALSE
 #define dprintf	if (dbg) fprintf(stderr,
 
-extern char *filename;
 extern int lineno;
 #define	LIBFIL	1
 #define	SILENT	2
@@ -132,7 +130,7 @@ typedef struct exprextl {	/* external node of expr tree */
 	boolean leaf;	/* always TRUE */
 	union u {
 		struct namenode *path;
-		float const;
+		float fconst;
 	} info;
 	int kind;	/* should be one of PATH, CONST */
 	} EXPREXTL, *EXTLPTR;
@@ -357,3 +355,9 @@ extern void opqseg();
 /* lexical analyzer routines */
 extern void filepush ();
 extern void filepop ();
+
+/* defined in ideal.c */
+
+extern void interpret(void);
+extern void idinclude (const char *, int);
+extern const char *filename;
