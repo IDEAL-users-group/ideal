@@ -4,7 +4,7 @@ A first implementation of the ideal constraint-based language for
 describing pictures.
 
 The original code was copied from
-[freaknet.org/martin/tape/stuff/ditroff/newideal](http://freaknet.org/martin/tape/stuff/ditroff/ideal/) .
+[freaknet.org/martin/tape/stuff/ditroff/ideal](http://freaknet.org/martin/tape/stuff/ditroff/ideal/) .
 
 The files downloaded are:
 
