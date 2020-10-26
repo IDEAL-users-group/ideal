@@ -1,16 +1,14 @@
 # Makefile for ideal/idfilt 1.3 (UKC) 13/2/89
 
-# LIBDIR is innherited from parent makefile, usually /usr/lib/ideal
+# BINDIR is innherited from the parent makefile.
 
 ALL = pfilt tfilt
 
 all: $(ALL)
 
 install: all
-	-mkdir $(LIBDIR)/idfilt
-	install -s 4filt $(LIBDIR)/idfilt/4filt
-	install -s pfilt $(LIBDIR)/idfilt/pfilt
-	install -s tfilt $(LIBDIR)/idfilt/tfilt
+	../install-file $(BINDIR)/pfilt a+rx,a-w pfilt 
+	../install-file $(BINDIR)/tfilt a+rx,a-w tfilt 
 
 clean:
 	rm -f $(ALL) *.o
