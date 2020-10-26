@@ -2,70 +2,62 @@
 
 YACC	= bison -y
 
+BASEDIR = $(PWD)/dirs
+
 # Where the executable lives that the users call "ideal"
-BINDIR = /usr/lib/ditroff
+BINDIR = $(BASEDIR)/bin
 
 # Where ideal's chattels live (usually /usr/lib/ideal)
-LIBDIR = /usr/lib/ideal
+LIBDIR = $(BASEDIR)/lib
 
-CFLAGS = -O -DLIBDIR=\"$(LIBDIR)/lib/\"
+MANDIR = $(BASEDIR)/man
+
+CFLAGS = -O -DLIBDIR=\"$(LIBDIR)/\"
 
 SOURCES =\
-	ideal.h\
-	ideal.c\
-	util.c\
-	memut.c\
-	bldds.c\
-	simul.c\
-	exprn.c\
 	action.c\
-	piece.c\
-	opaque.c\
-	inter.c\
-	opqpoly.c\
+	bldds.c\
+	exprn.c\
+	ideal.c\
+	ideal.h\
 	idlex.l\
-	idyac.y
+	idyac.y\
+	inter.c\
+	memut.c\
+	opaque.c\
+	opqpoly.c\
+	piece.c\
+	simul.c\
+	util.c
 OBJECTS =\
-	y.tab.o\
-	lex.yy.o\
-	ideal.o\
-	util.o\
-	memut.o\
-	bldds.o\
-	simul.o\
-	exprn.o\
 	action.o\
-	piece.o\
+	bldds.o\
+	exprn.o\
+	ideal.o\
+	inter.o\
+	lex.yy.o\
+	memut.o\
 	opaque.o\
 	opqpoly.o\
-	inter.o
+	piece.o\
+	simul.o\
+	util.o\
+	y.tab.o
 ADMIXTURE =\
-	y.tab.c\
+	$(SOURCES)\
 	lex.yy.c\
-	ideal.c\
-	util.c\
-	memut.c\
-	bldds.c\
-	simul.c\
-	exprn.c\
-	action.c\
-	piece.c\
-	opaque.c\
-	opqpoly.c\
-	inter.c
+	y.tab.c
 
 a.out:	$(OBJECTS)
 	cc $(OBJECTS) -ll -lm
 
-install: a.out
-	-mkdir $(LIBDIR)
-	install -s a.out $(LIBDIR)/ideal
-	-mkdir $(LIBDIR)/lib
-	cp lib/* $(LIBDIR)/lib
-	(cd idfilt; make install LIBDIR=$(LIBDIR) )
-	install -c -m 755 ideal.cmd $(BINDIR)/ideal
-	install -c -m 644 ideal.1 /usr/man/man1/ideal.1
-	install -c -m 644 ideal.1,h /usr/how/how1/ideal.1
+install: 
+	./install-file $(BINDIR)/ideal-a.out a+rx,a-w a.out 
+	sed < ideal.cmd -e 's|<BINDIR>|$(BINDIR)|' | \
+	  ./install-file $(BINDIR)/ideal a+rx,a-w -
+	./install-file $(MANDIR)/man1/ideal.1 a+r,a-wx ideal.1 
+	./install-file $(LIBDIR)/@ a+r,a-wx lib/*
+	cd idfilt ; $(MAKE) BINDIR=$(BINDIR) install
 
 $(OBJECTS):	ideal.h
 
