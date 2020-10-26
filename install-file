@@ -1,0 +1,60 @@
+#! /bin/sh
+#
+# install-file - install source file $3 as target file $1 with mode $2.
+#
+# If the source file $3 is "-", the contents of std-in becomes the contents of
+# the target file $1.  Source and target file directories are created as needed.
+# For example
+#
+#   $ sed -e 's;BLAH;blah;g' < file | install-file /usr/bin/ex a-rx,a-w -
+#
+# If more than one source file $3 is given on the command line, then every
+# at sign ("@") in the target file $1 is replaced by the name of the file in
+# each source file; none of the source files should be "-".  For example
+#
+#   $ install-file /usr/lib/@ a+r,a-wx lib/*
+#
+# Be careful using this code; there needs to be a lot more error checking.
+# Also, any directories created are probably created with unhelpful modes.
+
+cmdname=$(basename $0)
+
+if [ $# -lt 3 ] ; then
+  echo 1>&2 "At least three arguments expected, $# given."
+  echo 1>&2 "Command format is \"$cmdname target-file target-mode source-file...\"."
+  exit 1  
+fi
+
+targetfile="$1"
+targetdir=$(expr "$1" : '\(.*\)/[^/]*$')
+[ -d $targetdir ] || mkdir -p $targetdir
+shift 1
+
+targetmode=$1
+shift 1
+
+if [ "$1" = "-" ] ; then
+
+  cat > "$targetfile"
+  chmod "$targetmode" "$targetfile"
+
+else
+
+  while [ $# -gt 0 ] ; do
+
+    [ -r "$1" ] || {
+      echo 1>&2 "$cmdname:  Can't find the source file \"$1\"."
+      exit 1
+      }
+
+    filename=$(expr "$1" : '.*/\([^/]*\)$')
+    tf=$(echo "$targetfile" | sed -e "s;@;$filename;g")
+    [ -r "$tf" ] && chmod u+w "$tf"
+    cp "$1" "$tf"
+    chmod "$targetmode" "$tf"
+
+    shift 1
+
+  done
+
+fi
