@@ -68,7 +68,8 @@ lex.yy.c:	idlex.l
 lex.yy.o:	lex.yy.c
 	cc -c -DYY_NO_INPUT lex.yy.c
 
-y.tab.c:	idyac.y
+y.tab.c \
+y.tab.h:idyac.y
 	$(YACC) -d idyac.y
 
 list:
@@ -113,3 +114,5 @@ export:	cpio
 	subdirectories\
 	subdirs.cpio\
 	$(WHO)
+
+action.o: y.tab.h
