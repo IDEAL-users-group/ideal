@@ -43,6 +43,7 @@ void unput ();
 	file_start = FALSE;
 %}
 <OUTSIDE>^\.IS.*\n	{
+			++lineno;
 			BEGIN PROGRAM;
 			if (!ISnest)
 				printf ("%s", yytext);
@@ -64,6 +65,7 @@ void unput ();
 			printf ("%s", yytext);
 			}
 <OUTSIDE>\n		{
+			++lineno;
 			if (just_popped) {
 				BEGIN PROGRAM;
 				just_popped = FALSE;
@@ -124,6 +126,7 @@ void unput ();
 			BEGIN OUTSIDE + 1;
 			}
 <LIBRARY>\n		{
+			++lineno;
 			BEGIN PROGRAM + 1;
 			}
 <PROGRAM>^\.\.\.include	{
@@ -136,9 +139,11 @@ void unput ();
 			BEGIN OUTSIDE + 1;
 			}
 <INCLUDE>\n		{
+			++lineno;
 			BEGIN PROGRAM + 1;
 			}
 <PROGRAM>^\.I[EF].*\n	{
+			++lineno;
 			interpret ();
 			ISnest --;
 			if (!ISnest)
@@ -169,6 +174,7 @@ void unput ();
 			}
 <COMMENT>.		;
 <COMMENT>\n		{
+			++lineno;
 			}
 <PROGRAM>"'"[^']*	{
 			if (yytext[yyleng-1] == '\\') {
@@ -211,6 +217,7 @@ void unput ();
 			}
 			}
 <PROGRAM>\n		{
+			++lineno;
 			}
 <PROGRAM>"{"		{
 			bracenest ++;
