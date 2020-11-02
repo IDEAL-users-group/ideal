@@ -1,3 +1,5 @@
+#include <stdlib.h>
+#include <strings.h>
 #include "ideal.h"
 #include "y.tab.h"
 
@@ -8,6 +10,9 @@ int lineno = 0;
 char libstr[50];
 boolean radflag = FALSE;
 
+extern int yydebug;
+extern int yy_flex_debug;
+
 BOXPTR boxlist = NULL;
 
 static void act (LINEPTR);
@@ -15,7 +20,21 @@ static void act (LINEPTR);
 int
 main(int argc, const char * argv[])
 {
+        char * debug_opts;
+  
 	bug_off;
+	yydebug = 0;
+	yy_flex_debug = 0;
+	
+        if (debug_opts = getenv("db")) {
+	  if (index(debug_opts, 'i'))
+	    bug_on;
+	  if (index(debug_opts, 'l'))
+	    yy_flex_debug = 1;
+	  if (index(debug_opts, 'p'))
+	    yydebug = 1;
+	  }
+	
 	while (argc > 1 && argv[1][0] == '-') {
 		switch (argv[1][1]) {
 		case 'd':
