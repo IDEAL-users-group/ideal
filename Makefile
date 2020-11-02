@@ -1,6 +1,14 @@
 # Makefile for ideal, 1.3 (UKC) 13/2/89
 
 YACC	= bison -y
+YYFLAGS = -d -t
+
+LEX	= flex
+LFLAGS  = --warn --debug
+
+CC	= gcc
+CLFLAGS	= -g
+CFLAGS	= $(CLFLAGS) -DYY_NO_INPUT -O -DLIBDIR=\"$(LIBDIR)/\"
 
 BASEDIR = $(PWD)/dirs
 
@@ -12,7 +20,6 @@ LIBDIR = $(BASEDIR)/lib
 
 MANDIR = $(BASEDIR)/man
 
-CFLAGS = -O -DLIBDIR=\"$(LIBDIR)/\"
 
 SOURCES =\
 	action.c\
@@ -49,7 +56,7 @@ ADMIXTURE =\
 	y.tab.c
 
 a.out:	$(OBJECTS)
-	cc $(OBJECTS) -ll -lm
+	$(CC) $(CLFLAGS) $(OBJECTS) -ll -lm
 
 install: 
 	./install-file $(BINDIR)/ideal-a.out a+rx,a-w a.out 
@@ -64,19 +71,17 @@ $(OBJECTS):	ideal.h
 ideal.h:	stdas.h
 
 lex.yy.c:	idlex.l
-	lex idlex.l
-lex.yy.o:	lex.yy.c
-	cc -c -DYY_NO_INPUT lex.yy.c
+	$(LEX) $(LFLAGS) idlex.l
 
 y.tab.c \
 y.tab.h:idyac.y
-	$(YACC) -d idyac.y
+	$(YACC) $(YYFLAGS) idyac.y
 
 list:
 	pr $(SOURCES)
 
-lint:
-	lint $(ADMIXTURE) -lm
+lex-test:	lex-test.o lex.yy.o 
+	$(CC) -o $@ $^
 
 backup:
 	cp a.out makefile $(SOURCES) precious
