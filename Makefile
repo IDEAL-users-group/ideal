@@ -1,14 +1,14 @@
 # Makefile for ideal, 1.3 (UKC) 13/2/89
 
 YACC	= bison -y
-YYFLAGS = -d -t
+YFLAGS	= -d -t
 
 LEX	= flex
 LFLAGS  = --warn --debug
 
 CC	= gcc
-CLFLAGS	= -g
-CFLAGS	= $(CLFLAGS) -DYY_NO_INPUT -O -DLIBDIR=\"$(LIBDIR)/\"
+CLFLAGS	= -g 
+CFLAGS	= $(CLFLAGS) -DYY_NO_INPUT -DLIBDIR=\"$(LIBDIR)/\" -c
 
 BASEDIR = $(PWD)/dirs
 
@@ -19,7 +19,6 @@ BINDIR = $(BASEDIR)/bin
 LIBDIR = $(BASEDIR)/lib
 
 MANDIR = $(BASEDIR)/man
-
 
 SOURCES =\
 	action.c\
@@ -35,7 +34,9 @@ SOURCES =\
 	opqpoly.c\
 	piece.c\
 	simul.c\
-	util.c
+	string-buffer.c\
+	util.c\
+	utils.c
 OBJECTS =\
 	action.o\
 	bldds.o\
@@ -48,7 +49,9 @@ OBJECTS =\
 	opqpoly.o\
 	piece.o\
 	simul.o\
+	string-buffer.o\
 	util.o\
+	utils.o\
 	y.tab.o
 ADMIXTURE =\
 	$(SOURCES)\
@@ -56,7 +59,7 @@ ADMIXTURE =\
 	y.tab.c
 
 a.out:	$(OBJECTS)
-	$(CC) $(CLFLAGS) $(OBJECTS) -ll -lm
+	cc $(OBJECTS) -ll -lm
 
 install: 
 	./install-file $(BINDIR)/ideal-a.out a+rx,a-w a.out 
@@ -72,16 +75,18 @@ ideal.h:	stdas.h
 
 lex.yy.c:	idlex.l
 	$(LEX) $(LFLAGS) idlex.l
+lex.yy.o:	lex.yy.c
+	$(CC) $(CFLAGS) lex.yy.c
 
 y.tab.c \
 y.tab.h:idyac.y
-	$(YACC) $(YYFLAGS) idyac.y
+	$(YACC) -d idyac.y
 
 list:
 	pr $(SOURCES)
 
-lex-test:	lex-test.o lex.yy.o 
-	$(CC) -o $@ $^
+lint:
+	lint $(ADMIXTURE) -lm
 
 backup:
 	cp a.out makefile $(SOURCES) precious
