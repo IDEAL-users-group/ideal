@@ -1,6 +1,11 @@
 %{
 #include "ideal.h"
 #include "y.tab.h"
+#include "string-buffer.h"
+
+static string_buffer string_literal;
+static char string_delimiter;
+
 extern int lineno, yylval;
 extern boolean flyback;
 
@@ -29,19 +34,25 @@ void filepop ();
 char input ();
 void unput ();
 %}
-%Start	PROGRAM COMMENT OUTSIDE LIBRARY INCLUDE
+%Start	PROGRAM COMMENT OUTSIDE LIBRARY INCLUDE string
+
 %%
+
 %{
 	int numitems, i;
 	char item[5][20];
 	char cmd[20];
 	static int ISnest, bracenest, commnest, omode;
+
 	if (file_start) {
 		BEGIN OUTSIDE;
 		ISnest = 0;
 	};
+
 	file_start = FALSE;
+        string_literal = sb_new();
 %}
+
 <OUTSIDE>^\.IS.*\n	{
 			++lineno;
 			BEGIN PROGRAM;
@@ -176,36 +187,38 @@ void unput ();
 <COMMENT>\n		{
 			++lineno;
 			}
-<PROGRAM>"'"[^']*	{
-			if (yytext[yyleng-1] == '\\') {
-				yytext[yyleng-1] = yytext[yyleng];
-				yyleng --;
-				yymore();
-			} else {
-				char *temp;
-				temp = malloc((unsigned) yyleng+1);
-				yytext[yyleng] = '\0';
-				strcpy(temp, &yytext[1]);
-				yylval = (int) temp;
-				input();
-				return(STRING);
-			}
-			}
-<PROGRAM>\"[^\"]*	{
-			if (yytext[yyleng-1] == '\\') {
-				yytext[yyleng-1] = yytext[yyleng];
-				yyleng --;
-				yymore();
-			} else {
-				char *temp;
-				temp = malloc((unsigned) yyleng+1);
-				yytext[yyleng] = '\0';
-				strcpy(temp, &yytext[1]);
-				yylval = (int) temp;
-				input();
-				return(STRING);
-			}
-			}
+
+<PROGRAM>['"] {
+  string_delimiter = yytext[0];
+  sb_empty(string_literal);
+  sb_add_char(string_literal, yytext[0]);
+  BEGIN string;
+  }
+
+
+<string>{
+
+  \\(.|\n) {
+    sb_add_string(string_literal, yytext);
+    if (yytext[1] == '\n')
+      ++lineno;
+    }
+
+  ['"] {
+    sb_add_char(string_literal, yytext[0]);
+    if (string_delimiter == yytext[0]) {
+      yylval = (int) sb_get(string_literal);
+      BEGIN PROGRAM;
+      return STRING;
+      }
+    }
+
+  [^\\'"]+ {
+    sb_add_string(string_literal, yytext);
+    }
+
+  }
+
 <PROGRAM>[ \t]+		{
 			if (just_popped) {
 				if (omode == LIBFIL)
@@ -230,7 +243,7 @@ void unput ();
 			return (yylval = RBRACE);
 			}
 <PROGRAM>[\<\>\(\)\[\]\+\-\*\/\=\,\;\:\.\^\~]	return(yytext[0]);
-<PROGRAM>.		fprintf(stderr, "ideal: unknown input token %s flushed\n", &yytext[0]);
+<PROGRAM>.		fprintf(stderr, "ideal: unknown input character \"%s\" flushed.\n", yytext);
 %%
 void filepush (f)
 FILE *f;
