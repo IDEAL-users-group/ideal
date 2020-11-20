@@ -1,6 +1,14 @@
 # Makefile for ideal, 1.3 (UKC) 13/2/89
 
 YACC	= bison -y
+YFLAGS	= -d -t
+
+LEX	= flex
+LFLAGS  = --warn --debug
+
+CC	= gcc
+CLFLAGS	= -g 
+CFLAGS	= $(CLFLAGS) -DYY_NO_INPUT -DLIBDIR=\"$(LIBDIR)/\" -c
 
 BASEDIR = $(PWD)/dirs
 
@@ -11,8 +19,6 @@ BINDIR = $(BASEDIR)/bin
 LIBDIR = $(BASEDIR)/lib
 
 MANDIR = $(BASEDIR)/man
-
-CFLAGS = -O -DLIBDIR=\"$(LIBDIR)/\"
 
 SOURCES =\
 	action.c\
@@ -28,7 +34,9 @@ SOURCES =\
 	opqpoly.c\
 	piece.c\
 	simul.c\
-	util.c
+	string-buffer.c\
+	util.c\
+	utils.c
 OBJECTS =\
 	action.o\
 	bldds.o\
@@ -41,7 +49,9 @@ OBJECTS =\
 	opqpoly.o\
 	piece.o\
 	simul.o\
+	string-buffer.o\
 	util.o\
+	utils.o\
 	y.tab.o
 ADMIXTURE =\
 	$(SOURCES)\
@@ -64,11 +74,12 @@ $(OBJECTS):	ideal.h
 ideal.h:	stdas.h
 
 lex.yy.c:	idlex.l
-	lex idlex.l
+	$(LEX) $(LFLAGS) idlex.l
 lex.yy.o:	lex.yy.c
-	cc -c -DYY_NO_INPUT lex.yy.c
+	$(CC) $(CFLAGS) lex.yy.c
 
-y.tab.c:	idyac.y
+y.tab.c \
+y.tab.h:idyac.y
 	$(YACC) -d idyac.y
 
 list:
@@ -113,3 +124,5 @@ export:	cpio
 	subdirectories\
 	subdirs.cpio\
 	$(WHO)
+
+action.o: y.tab.h
